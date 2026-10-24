@@ -1,0 +1,7 @@
+{
+  "name":"cortico-world-codex-monitor","version":"0.1.0","type":"module","license":"MIT",
+  "description":"Local Codex Desktop task monitor; optional model-free Coopanion bubble integration",
+  "keywords":["cortico-world","cortico","codex","local"],"engines":{"node":">=22.18"},
+  "main":"./src/index.ts","files":["src","describe.json","README.md","LICENSE"],
+  "cortico":{"kind":"world","api":6,"tags":["local"],"describe":"describe.json","webUiClient":"src/webui.js"}
+}

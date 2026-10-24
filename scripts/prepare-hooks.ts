@@ -1,0 +1,13 @@
+import { resolve, join } from 'node:path';
+import { mkdirSync, copyFileSync } from 'node:fs';
+import { atomicWrite } from '../packages/task-bridge/src/state.ts';
+const dir=resolve(process.env.COO_MONITOR_DATA??'.local');
+const out=join(dir,'codex-plugin');mkdirSync(join(out,'hooks'),{recursive:true});
+copyFileSync('scripts/hook-relay.mjs',join(out,'hooks','relay.mjs'));
+copyFileSync(join(dir,'connection.json'),join(out,'hooks','connection.json'));
+const q=(s:string)=>'"'+s.replaceAll('\\','/')+'"';
+const command=`${q(process.execPath)} ${q(join(out,'hooks','relay.mjs'))}`;
+const hooks=Object.fromEntries(['UserPromptSubmit','PreToolUse','PostToolUse','PermissionRequest','Interrupt','Stop'].map(name=>[name,[{hooks:[{type:'command',command,timeout:1}]}]]));
+atomicWrite(join(out,'hooks','hooks.json'),{hooks});
+atomicWrite(join(out,'plugin.json'),{name:'coo-task-monitor',version:'0.1.0',description:'Local metadata-only task monitor',extensions:{'com.openai':{hooks:'./hooks/hooks.json'}}});
+console.log(`Prepared ${out}. Install manually in Codex Desktop and review/trust hooks. Existing Codex configuration was not modified.`);

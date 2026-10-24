@@ -1,0 +1,14 @@
+{
+  "name": "coo-codex-monitor", "version": "0.1.0", "private": true,
+  "type": "module", "license": "MIT", "engines": {"node": ">=22.18"},
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "start": "node packages/task-bridge/src/main.ts",
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "diagnose": "node scripts/diagnose.ts",
+    "prepare:hooks": "node scripts/prepare-hooks.ts",
+    "pack:world": "npm pack --workspace=cortico-world-codex-monitor"
+  },
+  "devDependencies": {"@types/node": "^22.0.0", "typescript": "~5.9.3"}
+}

@@ -1,0 +1,25 @@
+{
+  "tools": [
+    {
+      "name": "codex_tasks",
+      "description": "Read observed local Codex task states.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "tags": [
+        "read"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "type": "codex-monitor.notice",
+      "description": {
+        "en": "A verified Codex task transition.",
+        "zh": "明确观察到的 Codex 任务变化。"
+      }
+    }
+  ]
+}
