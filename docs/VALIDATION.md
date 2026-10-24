@@ -15,6 +15,7 @@
 - 正在进行的这条 Desktop 会话被 Bridge 实际识别为 running，时间戳随真实活动推进。没有为验证而追加伪造 Codex 日志。
 - Bridge 实际停止/重启，epoch、偏移与状态保留，World 自动重连、消费游标追上 Bridge；历史通知数量为 0。
 - 无 API Key 的隔离 Coopanion 进程启动成功，日志明确 `World 已启动: codex-monitor`、`桌宠页面已连接`，消费者 cursor 实际持续更新。隔离数据在 `.local/coopanion-data`，没有修改已安装应用数据。
+- 隔离 Coopanion 进程树实际强制停止并重新启动；日志显示 bootstrap 重启恢复，桌宠重新连接，World 消费游标与 Bridge 相同 epoch、lag=0，历史提醒为 0。原生气泡是否重复的目视验收仍未完成。
 - 通过真实 `DesktopPetWorld.dialog()` 和真实 Web 页面观察到测试气泡：“本地通知连接测试：这是一条界面测试消息，不代表 Codex 任务完成。” Bot events=0。这个探针使用测试 Host，不运行模型，不证明真实 Desktop 完成通知已端到端通过。
 
 初次上游测试因 Electron 二进制未下载和 Windows 受限身份导致失败；补齐锁定运行时并在正常用户环境重跑后上述检查通过。
@@ -29,7 +30,7 @@
 | 异常终止 | 历史明确中断；静默不判完成测试通过 | 硬崩溃、GUI Interrupt 待人工验证 |
 | 两个并行任务 | 双 session/turn 自动化通过 | 两个 GUI 任务并发待人工验证 |
 | 重启 Bridge | 本机真实进程重启/消费者重连通过 | 已实测此范围 |
-| 重启 Coopanion | 消费者持久化/重启测试通过 | 原生 GUI 重启待人工验证 |
+| 重启 Coopanion | 消费者测试及实际隔离进程树重启恢复通过 | 原生气泡去重目视检查待人工验证 |
 | 重启 Codex Desktop | 文件替换与重新发现测试通过 | 待人工验证，未中断当前工作 |
 | 历史不会重复通知 | 真正历史导入及 Bridge 重启后 0 历史提醒 | 已实测采集与消费者范围 |
 | 无 API Key | Bridge、World 挂载、真实测试气泡通过 | 测试气泡通过；完整新完成通知待人工验证 |
