@@ -1,6 +1,6 @@
 import { readFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname } from 'node:path';
-export interface Event {source:string;sessionId:string;taskId:string;event:string;timestamp:string;title:string;detail:string;project?:string}
+export interface Event {source:string;sessionId:string;taskId:string;event:string;timestamp:string;title:string;detail:string;project?:string;summary?:string;finalAnswer?:string}
 export interface Entry {seq:number;id:string;value:Event;notify:boolean}
 export interface Snapshot {epoch:string;seq:number;tasks:Event[]}
 export function writeJson(file:string,value:unknown){mkdirSync(dirname(file),{recursive:true});writeFileSync(file+'.tmp',JSON.stringify(value),{mode:0o600});renameSync(file+'.tmp',file);}

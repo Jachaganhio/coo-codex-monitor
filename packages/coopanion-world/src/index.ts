@@ -27,7 +27,8 @@ export class MonitorWorld {
     return {label:'Codex Task Monitor',lamps:[{label:'Local Bridge',state:this.client.online?'online' as const:'offline' as const,hint:this.sink?'Model-free bubbles enabled':'Status only by default; model mode uses subscription/API'}],badges:[{label:'最近观察到运行',value:tasks.filter(t=>['started','running'].includes(t.event)).length},{label:'等待操作',value:tasks.filter(t=>t.event==='needs_attention').length},{label:'已完成',value:tasks.filter(t=>t.event==='completed').length}],panels:[{id:'tasks',title:'任务状态',getMethods:['list']}],invoke:async(panel:string,method:string)=>{if(panel!=='tasks'||method!=='list')throw new Error('Unknown method');return {connected:this.client.online,...this.client.snapshot};}};
   }
   async deliver(e:Entry,host:Host):Promise<boolean>{
-    const text=messages[e.value.event];if(!text || e.value.event==='started'&&!this.cfg.notifyStarted)return true;
+    let text=messages[e.value.event];if(!text || e.value.event==='started'&&!this.cfg.notifyStarted)return true;
+    if(e.value.event==='completed')text=`Codex 本轮已结束。\n${e.value.summary ? '答复摘录：\n'+e.value.summary : '暂无可提取的结论，请在 Codex 查看结果。'}`;
     if(this.sink){if(!this.sink.ready())return false;return this.sink.show(text);}
     if(this.cfg.mode==='model')await host.pushEvent({type:'codex-monitor.notice',ts:e.value.timestamp,source:this.id,senderKey:e.value.sessionId,text:`${text} Task ${e.value.taskId}. Use pet_say to tell the person.`});
     return true;
@@ -37,7 +38,7 @@ export class MonitorWorld {
 }
 export function createMonitorDefinition(sink?:BubbleSink){return {
   id:'codex-monitor',label:'Codex Task Monitor',
-  defaults:():Config=>({enabled:false,connectionFile:process.env.COO_MONITOR_CONNECTION??'',mode:'status',notifyStarted:false}),
+  defaults:():Config=>({enabled:false,connectionFile:process.env.COO_MONITOR_CONNECTION??'',mode:'status',notifyStarted:true}),
   preflight:(ctx:Context)=>{if(!ctx.cfg.connectionFile)throw new Error('Set COO_MONITOR_CONNECTION to Bridge connection.json');},
   create:(ctx:Context)=>new MonitorWorld(ctx.cfg,ctx.dataDir,sink),
   describe:{tools:[{name:'codex_tasks',description:'Read observed local Codex tasks.',tags:['read'] as const,parameters:{type:'object',properties:{},additionalProperties:false}}],events:[{type:'codex-monitor.notice',description:{zh:'明确观察到的 Codex 任务变化。',en:'An observed Codex task transition.'}}]},

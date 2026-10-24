@@ -5,6 +5,7 @@ export interface TaskEvent {
   source: 'codex'; sessionId: string; taskId: string; event: EventType;
   title: string; timestamp: string; detail: string; project?: string;
   evidence: 'hook' | 'rollout';
+  summary?: string; finalAnswer?: string;
 }
 export const details: Record<EventType,string> = {
   started:'Codex 开始执行任务', running:'观察到 Codex 活动', needs_attention:'Codex 正在请求人工操作',
@@ -23,7 +24,9 @@ export function validateEvent(x: unknown): x is TaskEvent {
     && [e.sessionId,e.taskId].every(v=>typeof v==='string' && /^[\w.-]{1,160}$/.test(v))
     && typeof e.timestamp==='string' && Number.isFinite(Date.parse(e.timestamp))
     && typeof e.title==='string' && e.title.length<=160 && typeof e.detail==='string' && e.detail.length<=200
-    && (e.project===undefined || typeof e.project==='string' && e.project.length<=100);
+    && (e.project===undefined || typeof e.project==='string' && e.project.length<=100)
+    && (e.summary===undefined || typeof e.summary==='string' && e.summary.length<=250)
+    && (e.finalAnswer===undefined || typeof e.finalAnswer==='string' && e.finalAnswer.length<=64000);
 }
 export function makeEvent(sessionId:string,taskId:string,event:EventType,timestamp:string,evidence:TaskEvent['evidence'],project?:string):TaskEvent {
   return {source:'codex',sessionId,taskId,event,title:'Codex 任务',timestamp,detail:details[event],evidence,...(project ? {project} : {})};

@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { State, type Cursor } from '../state.ts';
 import { makeEvent, type EventType } from '../events.ts';
 import type { TaskAdapter } from './types.ts';
+import { extractConclusion } from '../summary.ts';
 const MAX_LINE=4*1024*1024;
 const hash=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 export async function filesUnder(dir:string):Promise<string[]> {
@@ -63,6 +64,7 @@ export class CodexAdapter implements TaskAdapter {
       const historical=Date.parse(r.timestamp)<Date.parse(baseline);
       // Historical unfinished tasks have unknown liveness until new explicit evidence arrives.
       const e=makeEvent(c.sessionId,c.taskId,historical && ['started','running'].includes(event)?'unknown':event,r.timestamp,'rollout',c.project);
+      if(event==='completed' && !historical) Object.assign(e,extractConclusion(p.last_agent_message));
       if(event==='running') {
         const old=this.state.data.tasks[JSON.stringify(['codex',c.sessionId,c.taskId])];
         if(old && old.event==='needs_attention')return; // Generic token activity cannot clear a permission request.
